@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estadística Descriptiva Univariante · Guía y Calculadora</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600;7..72,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16202E;
+    --navy:#1B2A4A;
+    --navy-2:#233658;
+    --paper:#F1F3F1;
+    --paper-2:#E7EBE7;
+    --card:#FFFFFF;
+    --gold:#C98A2C;
+    --gold-2:#E3A94A;
+    --teal:#2F6F62;
+    --line:#D8DED8;
+    --danger:#B4432E;
+    --radius:14px;
+    --serif:'Literata', Georgia, serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    line-height:1.55;
+  }
+  a{color:inherit;}
+
+  /* Layout */
+  .app{display:grid; grid-template-columns:260px 1fr; min-height:100vh;}
+  @media (max-width:900px){ .app{grid-template-columns:1fr;} .sidebar{position:static; height:auto;} }
+
+  .sidebar{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    background:var(--navy); color:#EDEFEF; padding:28px 20px 40px;
+    border-right:1px solid #0e1830;
+  }
+  .brand{
+    font-family:var(--serif); font-size:1.28rem; font-weight:600; letter-spacing:.2px;
+    margin-bottom:4px; color:#fff;
+  }
+  .brand small{display:block; font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--gold-2); margin-top:6px;}
+  .navlist{list-style:none; margin:26px 0 0; padding:0;}
+  .navlist li{margin-bottom:2px;}
+  .navlist a{
+    display:flex; gap:10px; align-items:baseline; text-decoration:none; color:#C9D0DC;
+    font-size:.86rem; padding:7px 8px; border-radius:8px; transition:background .15s, color .15s;
+  }
+  .navlist a:hover, .navlist a.active{ background:rgba(255,255,255,.06); color:#fff; }
+  .navlist .num{font-family:var(--mono); color:var(--gold-2); font-size:.74rem; min-width:20px;}
+  .navlist .calc-link{margin-top:14px; border-top:1px solid rgba(255,255,255,.12); padding-top:14px;}
+  .navlist .calc-link a{color:var(--gold-2); font-weight:600;}
+
+  main{padding:0;}
+
+  /* Hero */
+  .hero{
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-2) 60%, #2b4470 100%);
+    color:#fff; padding:70px 56px 60px; position:relative; overflow:hidden;
+  }
+  .hero::after{
+    content:""; position:absolute; right:-60px; top:-60px; width:340px; height:340px;
+    background:radial-gradient(circle, rgba(201,138,44,.28), transparent 70%);
+  }
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-2);}
+  .hero h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(2rem, 4vw, 3.1rem);
+    margin:14px 0 18px; max-width:720px; line-height:1.08;
+  }
+  .hero p{max-width:620px; color:#D7DCE6; font-size:1.05rem;}
+  .hero .cta{
+    display:inline-flex; gap:10px; align-items:center; margin-top:26px; background:var(--gold);
+    color:#1B140A; font-weight:600; padding:12px 20px; border-radius:999px; text-decoration:none;
+    font-size:.92rem; transition:transform .15s;
+  }
+  .hero .cta:hover{transform:translateY(-1px);}
+
+  section.content{padding:52px 56px; max-width:980px;}
+  @media (max-width:640px){ .hero{padding:46px 22px 40px;} section.content{padding:36px 22px;} }
+
+  .section-tag{font-family:var(--mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--teal);}
+  h2{font-family:var(--serif); font-size:1.9rem; font-weight:700; margin:8px 0 22px; color:var(--navy);}
+  h3{font-family:var(--serif); font-size:1.2rem; font-weight:600; margin:26px 0 10px; color:var(--navy-2);}
+  p{margin:0 0 14px;}
+
+  .grid{display:grid; gap:16px;}
+  .grid.cols-2{grid-template-columns:1fr 1fr;}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:720px){ .grid.cols-2, .grid.cols-3{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px 22px;
+  }
+  .card h4{margin:0 0 8px; font-size:.98rem; font-weight:600; color:var(--navy);}
+  .card p{margin:0; font-size:.92rem; color:#33404F;}
+
+  .formula{
+    font-family:var(--mono); background:var(--navy); color:#EFEFEF; padding:14px 18px;
+    border-radius:10px; font-size:.95rem; overflow-x:auto; margin:10px 0 16px;
+    border-left:4px solid var(--gold);
+  }
+  .note{
+    background:#FBF3E4; border-left:4px solid var(--gold); padding:12px 16px; border-radius:8px;
+    font-size:.9rem; margin:14px 0;
+  }
+  .note.warn{background:#FBEDE9; border-left-color:var(--danger);}
+  .note.ok{background:#EAF2EE; border-left-color:var(--teal);}
+
+  ul.tight{margin:0 0 14px; padding-left:20px;}
+  ul.tight li{margin-bottom:6px; font-size:.95rem;}
+
+  table.mini{width:100%; border-collapse:collapse; font-size:.88rem; margin:12px 0;}
+  table.mini th, table.mini td{border:1px solid var(--line); padding:8px 10px; text-align:center;}
+  table.mini th{background:var(--paper-2); font-family:var(--mono); font-weight:600; font-size:.78rem; text-transform:uppercase; letter-spacing:.04em;}
+
+  /* Calculator */
+  .calc-wrap{
+    background:var(--navy); color:#EDEFEF; padding:52px 56px 70px;
+  }
+  @media (max-width:640px){ .calc-wrap{padding:40px 22px 50px;} }
+  .calc-wrap .section-tag{color:var(--gold-2);}
+  .calc-wrap h2{color:#fff;}
+  .calc-wrap p.lead{color:#C9D0DC; max-width:640px;}
+
+  .console{
+    background:#0F1830; border:1px solid #2b3d5f; border-radius:16px; padding:26px;
+    margin-top:28px;
+  }
+  .tabs{display:flex; gap:8px; margin-bottom:16px; flex-wrap:wrap;}
+  .tab-btn{
+    background:transparent; border:1px solid #37496e; color:#C9D0DC; padding:9px 16px;
+    border-radius:999px; font-family:var(--sans); font-size:.85rem; cursor:pointer; transition:all .15s;
+  }
+  .tab-btn.active{background:var(--gold); color:#1B140A; border-color:var(--gold); font-weight:600;}
+
+  textarea{
+    width:100%; min-height:100px; background:#0A1224; color:#EDEFEF; border:1px solid #2b3d5f;
+    border-radius:10px; padding:14px; font-family:var(--mono); font-size:.92rem; resize:vertical;
+  }
+  textarea:focus{outline:2px solid var(--gold); outline-offset:1px;}
+
+  .row-controls{display:flex; gap:18px; align-items:center; flex-wrap:wrap; margin-top:14px;}
+  .radio-group{display:flex; gap:14px; align-items:center; font-size:.88rem;}
+  .radio-group label{display:flex; gap:6px; align-items:center; cursor:pointer;}
+
+  .btn-primary{
+    background:var(--gold); color:#1B140A; border:none; padding:12px 24px; border-radius:10px;
+    font-weight:600; font-size:.92rem; cursor:pointer; transition:transform .15s;
+  }
+  .btn-primary:hover{transform:translateY(-1px);}
+  .btn-secondary{
+    background:transparent; border:1px solid #37496e; color:#C9D0DC; padding:12px 18px;
+    border-radius:10px; font-size:.85rem; cursor:pointer;
+  }
+
+  .hint{font-size:.78rem; color:#8FA0BE; margin-top:8px; font-family:var(--mono);}
+
+  #resultsArea{margin-top:30px;}
+  .error-box{
+    background:#3a1f1a; border:1px solid #6b3226; color:#F3D3C7; padding:14px 18px;
+    border-radius:10px; font-size:.9rem; margin-top:20px;
+  }
+
+  .stat-card{
+    background:#101B36; border:1px solid #2b3d5f; border-radius:12px; padding:18px 20px;
+  }
+  .stat-card .label{font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--gold-2);}
+  .stat-card .value{font-family:var(--mono); font-size:1.5rem; font-weight:600; color:#fff; margin-top:4px;}
+  .stat-card .sub{font-size:.78rem; color:#8FA0BE; margin-top:4px;}
+
+  .interpret-box{
+    background:#101B36; border-left:4px solid var(--gold); border-radius:0 12px 12px 0;
+    padding:18px 22px; margin-top:22px; font-size:.94rem; color:#D7DCE6;
+  }
+  .interpret-box h4{margin:0 0 10px; color:#fff; font-family:var(--serif); font-size:1.05rem;}
+  .interpret-box ul{margin:0; padding-left:20px;}
+  .interpret-box li{margin-bottom:8px;}
+
+  .freq-table-wrap{overflow-x:auto; margin-top:18px;}
+  table.freq{width:100%; border-collapse:collapse; font-family:var(--mono); font-size:.82rem;}
+  table.freq th, table.freq td{border:1px solid #2b3d5f; padding:8px 10px; text-align:center; color:#D7DCE6;}
+  table.freq th{background:#0A1224; color:var(--gold-2); text-transform:uppercase; letter-spacing:.05em; font-size:.72rem;}
+
+  .boxplot-wrap{margin-top:26px; background:#101B36; border:1px solid #2b3d5f; border-radius:12px; padding:22px;}
+  .boxplot-wrap svg{width:100%; height:auto; display:block;}
+  .boxplot-wrap .cap{font-size:.78rem; color:#8FA0BE; margin-top:10px; text-align:center; font-family:var(--mono);}
+
+  footer{
+    padding:30px 56px 50px; font-size:.82rem; color:#5B6577; background:var(--paper);
+    border-top:1px solid var(--line);
+  }
+
+  ::selection{background:var(--gold-2); color:#1B140A;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">Estadística Descriptiva<small>Univariante · Guía interactiva</small></div>
+    <ul class="navlist">
+      <li><a href="#intro"><span class="num">01</span> Qué es la estadística</a></li>
+      <li><a href="#variables"><span class="num">02</span> Tipos de variables</a></li>
+      <li><a href="#tablas"><span class="num">03</span> Tablas de frecuencias</a></li>
+      <li><a href="#centro"><span class="num">04</span> Tendencia central</a></li>
+      <li><a href="#posicion"><span class="num">05</span> Cuartiles y percentiles</a></li>
+      <li><a href="#dispersion"><span class="num">06</span> Dispersión</a></li>
+      <li><a href="#cv"><span class="num">07</span> Coeficiente de variación</a></li>
+      <li><a href="#asimetria"><span class="num">08</span> Asimetría</a></li>
+      <li><a href="#boxplot-teoria"><span class="num">09</span> Boxplot y atípicos</a></li>
+      <li><a href="#agrupados"><span class="num">10</span> Datos agrupados (Sturges)</a></li>
+      <li><a href="#formulario"><span class="num">11</span> Cheat sheet</a></li>
+      <li class="calc-link"><a href="#calculadora">▶ Ir a la calculadora</a></li>
+    </ul>
+  </aside>
+
+  <main>
+    <!-- HERO -->
+    <header class="hero">
+      <div class="eyebrow">Semana 1 · Gerencia y Administración Pública</div>
+      <h1>Estadística descriptiva, de la fórmula al dato real.</h1>
+      <p>Una guía para repasar los conceptos de la unidad univariante — tablas de frecuencia, medidas de centro, dispersión y forma — con una calculadora al final donde ingresas tus propios datos y obtienes los resultados con su interpretación, igual que se pide en los ejercicios de clase.</p>
+      <a href="#calculadora" class="cta">Ir directo a la calculadora →</a>
+    </header>
+
+    <!-- 01 INTRO -->
+    <section class="content" id="intro">
+      <div class="section-tag">01 — Fundamentos</div>
+      <h2>¿Qué es la estadística descriptiva?</h2>
+      <p>Es la rama que se ocupa de recoger, organizar, resumir y presentar datos, con el objetivo de describir las características principales de un conjunto sin todavía sacar conclusiones que vayan más allá de esos datos. Eso último —generalizar hacia una población a partir de una muestra— le corresponde a la estadística inferencial.</p>
+
+      <div class="grid cols-2">
+        <div class="card">
+          <h4>Población (N)</h4>
+          <p>El conjunto total de elementos que interesa estudiar. Por ejemplo, todos los niños de una clínica, o los 40 municipios de un departamento.</p>
+        </div>
+        <div class="card">
+          <h4>Muestra (n)</h4>
+          <p>Un subconjunto representativo de la población, del cual se toman los datos cuando no es posible o práctico medir a todos.</p>
+        </div>
+      </div>
+
+      <div class="note warn">
+        <strong>Diferencia clave para los ejercicios:</strong> si trabajas con una población completa, la varianza se divide entre <em>N</em>. Si trabajas con una muestra y se pide la <em>cuasivarianza</em>, se divide entre <em>N − 1</em> (corrección de Bessel). Excel, por defecto, siempre calcula la versión muestral (<code>VAR.S</code>, <code>DESVEST.S</code>); para la poblacional hay que usar <code>VAR.P</code> y <code>DESVEST.P</code>.
+      </div>
+    </section>
+
+    <!-- 02 VARIABLES -->
+    <section class="content" id="variables">
+      <div class="section-tag">02 — Clasificación</div>
+      <h2>Tipos de variables estadísticas</h2>
+      <div class="grid cols-3">
+        <div class="card">
+          <h4>Cuantitativa discreta</h4>
+          <p>Toma valores enteros, producto de un conteo. Ejemplo: número de hijos por familia, número de metros.</p>
+        </div>
+        <div class="card">
+          <h4>Cuantitativa continua</h4>
+          <p>Puede tomar cualquier valor dentro de un intervalo, producto de una medición. Ejemplo: mililitros de agua consumida, kilómetros recorridos.</p>
+        </div>
+        <div class="card">
+          <h4>Cualitativa (categórica)</h4>
+          <p>Describe atributos no numéricos. Ejemplo: país de origen, nivel de satisfacción.</p>
+        </div>
+      </div>
+      <div class="note">Si la variable es continua y tiene muchos valores distintos, conviene agruparla en intervalos antes de construir la tabla de frecuencias (ver sección 10, Regla de Sturges).</div>
+    </section>
+
+    <!-- 03 TABLAS -->
+    <section class="content" id="tablas">
+      <div class="section-tag">03 — Organización de datos</div>
+      <h2>Tablas de frecuencias</h2>
+      <p>Toda tabla de frecuencias descriptiva se construye con cuatro columnas, a partir de los valores distintos <em>xᵢ</em> ordenados de menor a mayor:</p>
+      <ul class="tight">
+        <li><strong>fᵢ</strong> — Frecuencia absoluta: cuántas veces se repite el valor.</li>
+        <li><strong>Fᵢ</strong> — Frecuencia absoluta acumulada: suma de fᵢ hasta ese valor (Fᵢ = Σf).</li>
+        <li><strong>frᵢ</strong> — Frecuencia relativa: proporción sobre el total (frᵢ = fᵢ / N).</li>
+        <li><strong>Frᵢ</strong> — Frecuencia relativa acumulada: suma de las relativas (Frᵢ = Fᵢ / N).</li>
+      </ul>
+      <table class="mini">
+        <tr><th>xᵢ</th><th>fᵢ</th><th>Fᵢ</th><th>frᵢ</th><th>Frᵢ</th></tr>
+        <tr><td>3</td><td>10</td><td>10</td><td>0.25</td><td>0.25</td></tr>
+        <tr><td>4</td><td>10</td><td>20</td><td>0.25</td><td>0.50</td></tr>
+        <tr><td>5</td><td>10</td><td>30</td><td>0.25</td><td>0.75</td></tr>
+        <tr><td>6</td><td>10</td><td>40</td><td>0.25</td><td>1.00</td></tr>
+      </table>
+      <p style="font-size:.85rem; color:#5B6577;">La calculadora más abajo construye esta tabla automáticamente a partir de tus datos.</p>
+    </section>
+
+    <!-- 04 CENTRO -->
+    <section class="content" id="centro">
+      <div class="section-tag">04 — Medidas de posición central</div>
+      <h2>Media, mediana y moda</h2>
+
+      <h3>Media aritmética (μ o x̄)</h3>
+      <div class="formula">μ = Σ(xᵢ · fᵢ) / N</div>
+      <p>Es el "centro de gravedad" de los datos, pero es sensible a valores extremos: unos pocos datos muy altos o muy bajos pueden desplazarla.</p>
+
+      <h3>Mediana (Me o Q2)</h3>
+      <p>Es el valor que deja el 50% de los datos por debajo y el 50% por encima. Se localiza buscando en la frecuencia acumulada el primer valor donde F ≥ N/2. A diferencia de la media, no la afectan los valores atípicos.</p>
+
+      <h3>Moda (Mo)</h3>
+      <p>Es el valor con mayor frecuencia. Puede haber más de una moda (distribución bimodal o multimodal); en ese caso, para calcular la asimetría se recomienda usar la mediana en lugar de la moda.</p>
+    </section>
+
+    <!-- 05 POSICION -->
+    <section class="content" id="posicion">
+      <div class="section-tag">05 — Medidas de posición</div>
+      <h2>Cuartiles y percentiles</h2>
+      <p>Dividen la distribución ordenada en partes iguales, usando la frecuencia acumulada:</p>
+      <ul class="tight">
+        <li><strong>Q1</strong> (percentil 25) — deja el 25% de los datos por debajo. Se busca donde F ≥ N/4.</li>
+        <li><strong>Q2</strong> (percentil 50) — es la mediana. Se busca donde F ≥ N/2.</li>
+        <li><strong>Q3</strong> (percentil 75) — deja el 75% de los datos por debajo. Se busca donde F ≥ 3N/4.</li>
+      </ul>
+      <p>Los cuartiles son la base para construir el diagrama de caja (boxplot) y para detectar valores atípicos.</p>
+    </section>
+
+    <!-- 06 DISPERSION -->
+    <section class="content" id="dispersion">
+      <div class="section-tag">06 — Medidas de dispersión</div>
+      <h2>Rango, varianza y desviación típica</h2>
+
+      <h3>Rango o recorrido (R)</h3>
+      <div class="formula">R = Máximo − Mínimo</div>
+
+      <h3>Varianza (σ² o S²)</h3>
+      <div class="formula">σ² = Σ(xᵢ − μ)² / N        (poblacional)
+S²  = Σ(xᵢ − x̄)² / (N − 1)   (muestral / cuasivarianza)</div>
+      <p>Es el promedio de las desviaciones al cuadrado respecto a la media. Sus unidades quedan al cuadrado (m², ml², etc.), por eso se suele acompañar de la desviación típica.</p>
+
+      <h3>Desviación típica (σ o S)</h3>
+      <div class="formula">σ = √σ²</div>
+      <p>Indica, en promedio, cuánto se alejan los datos de la media, en las unidades originales de la variable.</p>
+
+      <div class="note warn">En Excel: <code>VAR.P</code> / <code>DESVEST.P</code> para la versión poblacional; <code>VAR.S</code> / <code>DESVEST.S</code> (las que Excel usa por defecto) para la versión muestral.</div>
+    </section>
+
+    <!-- 07 CV -->
+    <section class="content" id="cv">
+      <div class="section-tag">07 — Dispersión relativa</div>
+      <h2>Coeficiente de variación (CV)</h2>
+      <div class="formula">CV = (σ / μ) × 100</div>
+      <p>Es una medida relativa (sin unidades) que permite comparar la dispersión entre conjuntos de datos con medias distintas.</p>
+      <table class="mini">
+        <tr><th>Valor de CV</th><th>Interpretación</th></tr>
+        <tr><td>CV &lt; 30%</td><td>Baja dispersión — datos homogéneos</td></tr>
+        <tr><td>30% ≤ CV ≤ 50%</td><td>Dispersión media</td></tr>
+        <tr><td>CV &gt; 50%</td><td>Alta dispersión — datos heterogéneos</td></tr>
+      </table>
+    </section>
+
+    <!-- 08 ASIMETRIA -->
+    <section class="content" id="asimetria">
+      <div class="section-tag">08 — Forma de la distribución</div>
+      <h2>Coeficientes de asimetría</h2>
+
+      <h3>Segundo coeficiente de Pearson</h3>
+      <div class="formula">As = 3 × (μ − Mediana) / σ</div>
+      <p>Se prefiere esta versión (basada en la mediana) sobre la clásica As = (μ − Moda) / σ, porque cuando la distribución es bimodal la moda deja de ser un valor único.</p>
+
+      <h3>Coeficiente de Fisher (momentos centrales)</h3>
+      <div class="formula">g₁ = [Σ(xᵢ − μ)³ / N] / σ³</div>
+      <p>Es más sensible a las colas de la distribución que el de Pearson.</p>
+
+      <table class="mini">
+        <tr><th>Resultado</th><th>Interpretación</th></tr>
+        <tr><td>As ≈ 0</td><td>Distribución simétrica</td></tr>
+        <tr><td>As &gt; 0</td><td>Asimetría positiva — cola más larga a la derecha</td></tr>
+        <tr><td>As &lt; 0</td><td>Asimetría negativa — cola más larga a la izquierda</td></tr>
+      </table>
+    </section>
+
+    <!-- 09 BOXPLOT -->
+    <section class="content" id="boxplot-teoria">
+      <div class="section-tag">09 — Visualización</div>
+      <h2>Diagrama de caja y detección de atípicos</h2>
+      <p>El boxplot resume la distribución en cinco puntos: mínimo no atípico, Q1, mediana (Q2), Q3 y máximo no atípico, y marca aparte cualquier valor atípico.</p>
+      <div class="formula">IQR = Q3 − Q1
+Límite inferior = Q1 − 1.5 × IQR
+Límite superior = Q3 + 1.5 × IQR</div>
+      <p>Cualquier dato fuera de ese rango [Límite inferior, Límite superior] se considera atípico (outlier) y se dibuja como punto aparte, no como parte del bigote.</p>
+    </section>
+
+    <!-- 10 AGRUPADOS -->
+    <section class="content" id="agrupados">
+      <div class="section-tag">10 — Variables continuas con muchos datos</div>
+      <h2>Datos agrupados en intervalos (Regla de Sturges)</h2>
+      <div class="formula">k = 1 + 3.322 × log₁₀(n)</div>
+      <p>Donde <em>k</em> es el número de intervalos recomendado y <em>n</em> el tamaño de la muestra. Luego:</p>
+      <ul class="tight">
+        <li>Rango = Máximo − Mínimo</li>
+        <li>Amplitud (A) = Rango / k, redondeando hacia arriba</li>
+        <li>Marca de clase (xᵢ) = (Límite inferior + Límite superior) / 2</li>
+      </ul>
+      <div class="note">En datos agrupados, la media y la varianza son aproximadas: se usa la marca de clase como representante de todo el intervalo.</div>
+    </section>
+
+    <!-- ===================== CALCULADORA ===================== -->
+    <section class="calc-wrap" id="calculadora">
+      <div class="section-tag">Herramienta interactiva</div>
+      <h2>Calculadora de estadística descriptiva</h2>
+      <p class="lead">Ingresa tus datos, elige el modo y obtén media, mediana, moda, varianza, desviación típica, coeficiente de variación, cuartiles, asimetría y detección de atípicos — con interpretación automática, tal como se pide en los ejercicios de clase.</p>
+
+      <div class="console">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="raw" id="tabRawBtn">Datos individuales</button>
+          <button class="tab-btn" data-tab="freq" id="tabFreqBtn">Tabla de frecuencias (x, f)</button>
+        </div>
+
+        <div id="tabRaw">
+          <label class="hint" for="rawInput">Escribe los valores separados por coma, espacio o salto de línea</label>
+          <textarea id="rawInput" placeholder="Ej: 1, 2, 3, 3, 4, 5, 5, 6, 6, 7">52, 56, 59, 64, 67, 72</textarea>
+        </div>
+
+        <div id="tabFreq" style="display:none;">
+          <label class="hint" for="freqInput">Una fila por valor: "valor, frecuencia" (una pareja por línea)</label>
+          <textarea id="freqInput" placeholder="Ej:&#10;1, 5&#10;2, 3&#10;3, 2">3, 10
+4, 10
+5, 10
+6, 10</textarea>
+        </div>
+
+        <div class="row-controls">
+          <div class="radio-group">
+            <label><input type="radio" name="mode" value="pop" checked> Población (dividir entre N)</label>
+            <label><input type="radio" name="mode" value="sample"> Muestra — cuasivarianza (dividir entre N−1)</label>
+          </div>
+        </div>
+
+        <div class="row-controls">
+          <button class="btn-primary" id="calcBtn">Calcular</button>
+          <button class="btn-secondary" id="clearBtn">Limpiar</button>
+        </div>
+
+        <div id="errorArea"></div>
+        <div id="resultsArea"></div>
+      </div>
+    </section>
+
+    <!-- 11 CHEAT SHEET -->
+    <section class="content" id="formulario">
+      <div class="section-tag">11 — Referencia rápida</div>
+      <h2>Cheat sheet de fórmulas</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h4>Centro</h4>
+          <p>μ = Σ(x·f)/N &nbsp;·&nbsp; Mediana: F ≥ N/2 &nbsp;·&nbsp; Moda: mayor f</p>
+        </div>
+        <div class="card">
+          <h4>Dispersión</h4>
+          <p>σ² = Σ(x²·f)/N − μ² (pob.) &nbsp;·&nbsp; S² = Σ(x²·f)/(N−1) − [N/(N−1)]·μ² (muestral) &nbsp;·&nbsp; σ = √σ²</p>
+        </div>
+        <div class="card">
+          <h4>Forma y posición</h4>
+          <p>CV = (σ/μ)×100 &nbsp;·&nbsp; As Pearson = 3·(μ−Me)/σ &nbsp;·&nbsp; Fisher g₁ = [Σ(x−μ)³/N] / σ³</p>
+        </div>
+        <div class="card">
+          <h4>Boxplot y Sturges</h4>
+          <p>IQR = Q3−Q1 &nbsp;·&nbsp; Límites = Q1−1.5·IQR, Q3+1.5·IQR &nbsp;·&nbsp; k = 1+3.322·log₁₀(n)</p>
+        </div>
+      </div>
+
+      <div class="note ok" style="margin-top:24px;">
+        <strong>Consejos para el examen:</strong> siempre empieza con la tabla de frecuencias; identifica si trabajas con población o muestra antes de calcular la varianza; si la distribución es bimodal usa la mediana para Pearson; y recuerda que un boxplot resume mínimo no atípico, Q1, Q2, Q3, máximo no atípico y los atípicos.
+      </div>
+    </section>
+
+    <footer>
+      Guía interactiva de Estadística Descriptiva Univariante · Material de apoyo para la Carrera de Gerencia y Administración Pública.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+  // ---------- Tabs ----------
+  const tabRawBtn = document.getElementById('tabRawBtn');
+  const tabFreqBtn = document.getElementById('tabFreqBtn');
+  const tabRaw = document.getElementById('tabRaw');
+  const tabFreq = document.getElementById('tabFreq');
+  let mode = 'raw';
+
+  tabRawBtn.addEventListener('click', () => {
+    mode = 'raw';
+    tabRawBtn.classList.add('active'); tabFreqBtn.classList.remove('active');
+    tabRaw.style.display = ''; tabFreq.style.display = 'none';
+  });
+  tabFreqBtn.addEventListener('click', () => {
+    mode = 'freq';
+    tabFreqBtn.classList.add('active'); tabRawBtn.classList.remove('active');
+    tabFreq.style.display = ''; tabRaw.style.display = 'none';
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    document.getElementById('rawInput').value = '';
+    document.getElementById('freqInput').value = '';
+    document.getElementById('resultsArea').innerHTML = '';
+    document.getElementById('errorArea').innerHTML = '';
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', runCalculation);
+
+  function fmt(n, d=4){
+    if (n === null || n === undefined || isNaN(n)) return '—';
+    return Number(n.toFixed(d)).toString();
+  }
+
+  function showError(msg){
+    document.getElementById('errorArea').innerHTML = `<div class="error-box">${msg}</div>`;
+    document.getElementById('resultsArea').innerHTML = '';
+  }
+
+  // ---------- Parsing ----------
+  function parseRaw(str){
+    const parts = str.split(/[\s,;]+/).map(s => s.trim()).filter(s => s.length > 0);
+    const nums = parts.map(Number);
+    if (nums.some(isNaN)) throw new Error('Uno de los valores ingresados no es un número válido.');
+    if (nums.length < 2) throw new Error('Ingresa al menos dos valores para poder calcular las medidas.');
+    return nums;
+  }
+
+  function parseFreq(str){
+    const lines = str.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length < 2) throw new Error('Ingresa al menos dos filas de valor y frecuencia.');
+    const pairs = lines.map(line => {
+      const parts = line.split(/[\s,;]+/).map(s => s.trim()).filter(s => s.length > 0);
+      if (parts.length < 2) throw new Error(`La fila "${line}" no tiene el formato "valor, frecuencia".`);
+      const x = Number(parts[0]), f = Number(parts[1]);
+      if (isNaN(x) || isNaN(f)) throw new Error(`La fila "${line}" contiene un valor no numérico.`);
+      if (f <= 0 || !Number.isInteger(f)) throw new Error(`La frecuencia en "${line}" debe ser un entero positivo.`);
+      return {x, f};
+    });
+    pairs.sort((a,b) => a.x - b.x);
+    return pairs;
+  }
+
+  function expandFromFreq(pairs){
+    let arr = [];
+    pairs.forEach(p => { for(let i=0;i<p.f;i++) arr.push(p.x); });
+    return arr;
+  }
+
+  // ---------- Core stats ----------
+  function median(sorted){
+    const n = sorted.length;
+    const mid = Math.floor(n/2);
+    return n % 2 === 0 ? (sorted[mid-1] + sorted[mid]) / 2 : sorted[mid];
+  }
+
+  function quartilesTukey(sorted){
+    const n = sorted.length;
+    const mid = Math.floor(n/2);
+    const lower = sorted.slice(0, mid);
+    const upper = n % 2 === 0 ? sorted.slice(mid) : sorted.slice(mid+1);
+    return { q1: median(lower), q2: median(sorted), q3: median(upper) };
+  }
+
+  function quartilesFromFreq(pairs, N){
+    // busca primer valor donde F >= N/4, N/2, 3N/4
+    let F = 0;
+    let q1=null, q2=null, q3=null;
+    for (const p of pairs){
+      F += p.f;
+      if (q1 === null && F >= N/4) q1 = p.x;
+      if (q2 === null && F >= N/2) q2 = p.x;
+      if (q3 === null && F >= (3*N)/4) q3 = p.x;
+    }
+    return {q1, q2, q3};
+  }
+
+  function modeOf(pairs){
+    const maxF = Math.max(...pairs.map(p => p.f));
+    const modes = pairs.filter(p => p.f === maxF).map(p => p.x);
+    return {modes, maxF};
+  }
+
+  function computeAll(values, isSample, freqPairsOverride){
+    const n = values.length;
+    const sorted = [...values].sort((a,b) => a-b);
+    const sum = values.reduce((a,b) => a+b, 0);
+    const mean = sum / n;
+
+    // build frequency table from raw values (or use provided pairs)
+    let pairs = freqPairsOverride;
+    if (!pairs){
+      const map = new Map();
+      sorted.forEach(v => map.set(v, (map.get(v)||0) + 1));
+      pairs = [...map.entries()].map(([x,f]) => ({x, f})).sort((a,b) => a.x-b.x);
+    }
+    const N = pairs.reduce((a,p) => a + p.f, 0);
+
+    // freq table with F, fr, Fr
+    let cum = 0;
+    const table = pairs.map(p => {
+      cum += p.f;
+      return { x: p.x, f: p.f, F: cum, fr: p.f/N, Fr: cum/N };
+    });
+
+    const sqDiffSum = values.reduce((a,v) => a + Math.pow(v-mean,2), 0);
+    const cubeDiffSum = values.reduce((a,v) => a + Math.pow(v-mean,3), 0);
+
+    const varPop = sqDiffSum / n;
+    const varSample = n > 1 ? sqDiffSum / (n-1) : NaN;
+    const variance = isSample ? varSample : varPop;
+    const std = Math.sqrt(variance);
+    const stdPop = Math.sqrt(varPop);
+
+    const med = median(sorted);
+    const {modes, maxF} = modeOf(pairs);
+    const isBimodal = modes.length > 1;
+
+    // quartiles: prefer frequency-based method (matches course material); fallback Tukey for continuous-looking raw data
+    let q = quartilesFromFreq(pairs, N);
+    if (q.q1 === null || q.q3 === null) q = quartilesTukey(sorted);
+
+    const iqr = q.q3 - q.q1;
+    const li = q.q1 - 1.5*iqr;
+    const ls = q.q3 + 1.5*iqr;
+    const outliers = sorted.filter(v => v < li || v > ls);
+
+    const cv = (std / Math.abs(mean)) * 100;
+    const asPearson = std !== 0 ? 3 * (mean - med) / std : NaN;
+    const g1 = stdPop !== 0 ? (cubeDiffSum / n) / Math.pow(stdPop,3) : NaN;
+
+    const min = sorted[0], max = sorted[sorted.length-1];
+    const range = max - min;
+
+    return {
+      n: N, values, sorted, mean, median: med, modes, maxF, isBimodal,
+      variance, std, varPop, stdPop, isSample,
+      q1: q.q1, q2: q.q2 !== undefined ? q.q2 : med, q3: q.q3,
+      iqr, li, ls, outliers, cv, asPearson, g1, min, max, range, table
+    };
+  }
+
+  // ---------- Interpretation ----------
+  function interpret(s){
+    const lines = [];
+
+    // mean vs median
+    const gap = Math.abs(s.mean - s.median);
+    if (gap < 0.05 * (s.std || 1)){
+      lines.push('La media y la mediana están muy cerca entre sí, lo que sugiere una distribución razonablemente simétrica en el centro.');
+    } else if (s.mean > s.median){
+      lines.push('La media es mayor que la mediana: hay valores altos que "jalan" el promedio hacia arriba, típico de una cola derecha más larga.');
+    } else {
+      lines.push('La media es menor que la mediana: hay valores bajos que arrastran el promedio hacia abajo, típico de una cola izquierda más larga.');
+    }
+
+    // mode
+    if (s.isBimodal){
+      lines.push(`La distribución es ${s.modes.length === 2 ? 'bimodal' : 'multimodal'} (valores ${s.modes.join(', ')} se repiten con frecuencia ${s.maxF}); por eso conviene usar la mediana en el coeficiente de asimetría en lugar de la moda.`);
+    } else {
+      lines.push(`La moda es ${fmt(s.modes[0])}, el valor que más se repite (frecuencia ${s.maxF}).`);
+    }
+
+    // CV
+    let cvLabel;
+    if (s.cv < 30) cvLabel = 'baja dispersión: los datos son relativamente homogéneos respecto a la media';
+    else if (s.cv <= 50) cvLabel = 'dispersión media';
+    else cvLabel = 'alta dispersión: los datos son heterogéneos respecto a la media';
+    lines.push(`El coeficiente de variación es ${fmt(s.cv,2)}%, lo que indica ${cvLabel}.`);
+
+    // skewness
+    let skLabel;
+    if (Math.abs(s.asPearson) < 0.1) skLabel = 'la distribución es prácticamente simétrica';
+    else if (s.asPearson > 0) skLabel = 'la distribución presenta asimetría positiva (cola más larga hacia la derecha)';
+    else skLabel = 'la distribución presenta asimetría negativa (cola más larga hacia la izquierda)';
+    lines.push(`El coeficiente de asimetría de Pearson es ${fmt(s.asPearson,4)}: ${skLabel}.`);
+
+    // outliers
+    if (s.outliers.length === 0){
+      lines.push('No se detectan valores atípicos según la regla de 1.5×IQR: todos los datos caen dentro de los límites esperados.');
+    } else {
+      lines.push(`Se detectan ${s.outliers.length} valor(es) atípico(s) según la regla de 1.5×IQR: ${s.outliers.map(v=>fmt(v)).join(', ')}. Conviene revisar si corresponden a errores de registro o a casos genuinamente extremos.`);
+    }
+
+    return lines;
+  }
+
+  // ---------- Render ----------
+  function renderFreqTable(table){
+    let rows = table.map(r => `<tr><td>${fmt(r.x)}</td><td>${r.f}</td><td>${r.F}</td><td>${fmt(r.fr,4)}</td><td>${fmt(r.Fr,4)}</td></tr>`).join('');
+    return `
+      <div class="freq-table-wrap">
+        <table class="freq">
+          <tr><th>xᵢ</th><th>fᵢ</th><th>Fᵢ</th><th>frᵢ</th><th>Frᵢ</th></tr>
+          ${rows}
+        </table>
+      </div>`;
+  }
+
+  function renderBoxplot(s){
+    const w = 640, h = 150;
+    const padL = 40, padR = 40;
+    const plotW = w - padL - padR;
+    const dataMin = Math.min(s.min, s.li);
+    const dataMax = Math.max(s.max, s.ls);
+    const scale = v => padL + ((v - dataMin) / (dataMax - dataMin || 1)) * plotW;
+
+    // whiskers: nearest non-outlier within limits
+    const nonOutliers = s.sorted.filter(v => v >= s.li && v <= s.ls);
+    const whiskerMin = nonOutliers.length ? Math.min(...nonOutliers) : s.min;
+    const whiskerMax = nonOutliers.length ? Math.max(...nonOutliers) : s.max;
+
+    const yMid = 75, boxH = 46;
+    const xQ1 = scale(s.q1), xQ2 = scale(s.q2), xQ3 = scale(s.q3);
+    const xWMin = scale(whiskerMin), xWMax = scale(whiskerMax);
+
+    let outlierDots = s.outliers.map(v => `<circle cx="${scale(v)}" cy="${yMid}" r="4.5" fill="#C98A2C" stroke="#0F1830" stroke-width="1"/>`).join('');
+
+    return `
+      <div class="boxplot-wrap">
+        <svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+          <line x1="${xWMin}" y1="${yMid}" x2="${xQ1}" y2="${yMid}" stroke="#8FA0BE" stroke-width="1.5"/>
+          <line x1="${xQ3}" y1="${yMid}" x2="${xWMax}" y2="${yMid}" stroke="#8FA0BE" stroke-width="1.5"/>
+          <line x1="${xWMin}" y1="${yMid-12}" x2="${xWMin}" y2="${yMid+12}" stroke="#8FA0BE" stroke-width="1.5"/>
+          <line x1="${xWMax}" y1="${yMid-12}" x2="${xWMax}" y2="${yMid+12}" stroke="#8FA0BE" stroke-width="1.5"/>
+          <rect x="${xQ1}" y="${yMid-boxH/2}" width="${Math.max(xQ3-xQ1,1)}" height="${boxH}" fill="#233658" stroke="#E3A94A" stroke-width="1.5"/>
+          <line x1="${xQ2}" y1="${yMid-boxH/2}" x2="${xQ2}" y2="${yMid+boxH/2}" stroke="#E3A94A" stroke-width="2.5"/>
+          ${outlierDots}
+          <text x="${xWMin}" y="${yMid+34}" fill="#8FA0BE" font-size="11" text-anchor="middle" font-family="IBM Plex Mono, monospace">${fmt(whiskerMin,2)}</text>
+          <text x="${xQ1}" y="${yMid-boxH/2-8}" fill="#D7DCE6" font-size="11" text-anchor="middle" font-family="IBM Plex Mono, monospace">Q1=${fmt(s.q1,2)}</text>
+          <text x="${xQ2}" y="${yMid-boxH/2-8}" fill="#E3A94A" font-size="11" text-anchor="middle" font-family="IBM Plex Mono, monospace">Q2=${fmt(s.q2,2)}</text>
+          <text x="${xQ3}" y="${yMid-boxH/2-8}" fill="#D7DCE6" font-size="11" text-anchor="middle" font-family="IBM Plex Mono, monospace">Q3=${fmt(s.q3,2)}</text>
+          <text x="${xWMax}" y="${yMid+34}" fill="#8FA0BE" font-size="11" text-anchor="middle" font-family="IBM Plex Mono, monospace">${fmt(whiskerMax,2)}</text>
+        </svg>
+        <div class="cap">Diagrama de caja · puntos dorados = valores atípicos (1.5×IQR)</div>
+      </div>`;
+  }
+
+  function renderResults(s){
+    const varLabel = s.isSample ? 'Varianza muestral (cuasivarianza, N−1)' : 'Varianza poblacional (N)';
+    const stdLabel = s.isSample ? 'Cuasidesviación típica (S)' : 'Desviación típica (σ)';
+
+    const statCards = [
+      ['N (tamaño)', s.n, ''],
+      ['Media (x̄)', fmt(s.mean), ''],
+      ['Mediana (Me)', fmt(s.median), ''],
+      ['Moda (Mo)', s.modes.map(v=>fmt(v)).join(', '), s.isBimodal ? 'bimodal / multimodal' : ''],
+      [varLabel, fmt(s.variance), 'unidades al cuadrado'],
+      [stdLabel, fmt(s.std), ''],
+      ['Coef. de variación (CV)', fmt(s.cv,2)+'%', ''],
+      ['Rango (R)', fmt(s.range), `mín ${fmt(s.min)} · máx ${fmt(s.max)}`],
+      ['Cuartil Q1', fmt(s.q1), ''],
+      ['Cuartil Q2 (mediana)', fmt(s.q2), ''],
+      ['Cuartil Q3', fmt(s.q3), ''],
+      ['Rango intercuartílico (IQR)', fmt(s.iqr), ''],
+      ['Límite inferior', fmt(s.li), 'Q1 − 1.5·IQR'],
+      ['Límite superior', fmt(s.ls), 'Q3 + 1.5·IQR'],
+      ['Asimetría de Pearson', fmt(s.asPearson,4), '3·(x̄−Me)/σ'],
+      ['Asimetría de Fisher (g₁)', fmt(s.g1,4), '(poblacional)'],
+    ];
+
+    const cardsHTML = statCards.map(([label, value, sub]) => `
+      <div class="stat-card">
+        <div class="label">${label}</div>
+        <div class="value">${value}</div>
+        ${sub ? `<div class="sub">${sub}</div>` : ''}
+      </div>`).join('');
+
+    const interpLines = interpret(s);
+    const interpHTML = `
+      <div class="interpret-box">
+        <h4>Interpretación</h4>
+        <ul>${interpLines.map(l => `<li>${l}</li>`).join('')}</ul>
+      </div>`;
+
+    document.getElementById('resultsArea').innerHTML = `
+      <h3 style="color:#fff; margin-top:6px;">Resultados</h3>
+      <div class="grid cols-3" style="margin-top:6px;">${cardsHTML}</div>
+      ${interpHTML}
+      <h3 style="color:#fff;">Tabla de frecuencias</h3>
+      ${renderFreqTable(s.table)}
+      <h3 style="color:#fff;">Diagrama de caja</h3>
+      ${renderBoxplot(s)}
+    `;
+  }
+
+  function runCalculation(){
+    document.getElementById('errorArea').innerHTML = '';
+    const isSample = document.querySelector('input[name="mode"]:checked').value === 'sample';
+    try {
+      let values, freqPairs = null;
+      if (mode === 'raw'){
+        values = parseRaw(document.getElementById('rawInput').value);
+      } else {
+        freqPairs = parseFreq(document.getElementById('freqInput').value);
+        values = expandFromFreq(freqPairs);
+      }
+      const stats = computeAll(values, isSample, freqPairs);
+      renderResults(stats);
+    } catch(err){
+      showError(err.message);
+    }
+  }
+
+  // Active nav highlighting
+  const sections = document.querySelectorAll('main section[id], main header[id]');
+  const navLinks = document.querySelectorAll('.navlist a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting){
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`.navlist a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(sec => obs.observe(sec));
+
+  // run once on load with default sample data
+  runCalculation();
+})();
+</script>
+</body>
+</html>
